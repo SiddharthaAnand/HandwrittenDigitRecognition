@@ -26,7 +26,7 @@ if __name__ == '__main__':
 	############################################################
 	### Read the csv file from the command line          #######
 	### Find the frequency of the classes present in the #######
-	### training data 									 #######
+	### training data 						             #######
 	############################################################
 
 	file_name = sys.argv[1]
@@ -42,4 +42,3 @@ if __name__ == '__main__':
 		print i, '\t', training_values[i]
 
 
-		
