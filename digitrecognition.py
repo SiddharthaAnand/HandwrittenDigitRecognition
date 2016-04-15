@@ -1,6 +1,9 @@
 
 import sys
 import pandas as pd
+import numpy as np
+from sklearn import neighbors
+from scipy import sparse
 
 def read_csv(file_name):
 	'''
@@ -9,6 +12,21 @@ def read_csv(file_name):
 	data_frame = pd.read_csv(file_name, sep=",")
 	return data_frame
 
+def divide_train_data(data_frame):
+	'''
+	Take data frame and divide into training data format.
+	X = training examples, every row is a single example.
+	y = corresponding class denoted by the first column.
+	'''
+
+	X = []
+	y = []
+
+	for row_index in range(len(data_frame)):
+		X.append(np.array(data_frame.iloc[row_index, 1: ]))
+		y.extend([data_frame.iloc[row_index]['label']])
+
+	return X, y
 
 def frequency_of_classes(data_frame):
 	'''
@@ -41,4 +59,16 @@ if __name__ == '__main__':
 	for i in range(len(training_values)):
 		print i, '\t', training_values[i]
 
+	##############################################################
+	#     Convert data frame into numpy array for sklearn        #
+	# X - extract column 1 to 784 as training features(pixels)   #
+	# y - class of the examples									 #
+	##############################################################
+
+	X, y = divide_train_data(data_frame)
+
+	##############################################################
+	# Fit the np array into a classifier 						 #
+	# Test the classifier 										 #
+	##############################################################
 
