@@ -1,9 +1,11 @@
 
+import csv	
 import sys
 import pandas as pd
 import numpy as np
-from sklearn import neighbors
+from sklearn import svm
 from scipy import sparse
+from sklearn.ensemble import RandomForestClassifier
 
 def read_csv(file_name):
 	'''
@@ -28,6 +30,17 @@ def divide_train_data(data_frame):
 
 	return X, y
 
+def test_data_numpy_array(test_data_frame):
+	'''
+	This method takes the test data frame consisting of features
+	and converts it into numpy array to test using sklearn.
+	'''
+	X = []
+	for row_index in range(len(test_data_frame)):
+		X.append(np.array(test_data_frame.iloc[row_index, 0: ]))
+
+	return X
+
 def frequency_of_classes(data_frame):
 	'''
 	Count the frequency of different classes in the training data.
@@ -47,10 +60,12 @@ if __name__ == '__main__':
 	### training data 						             #######
 	############################################################
 
-	file_name = sys.argv[1]
-	data_frame = read_csv(file_name)
+	train_file_name = sys.argv[1]
+	test_file_name = sys.argv[2]
+	data_frame = read_csv(train_file_name)
 	training_values = frequency_of_classes(data_frame)
-	
+	test_data = []
+
 	############################################################
 	#Print the frequency of the 9 classes in the training data #
 	############################################################
@@ -63,12 +78,39 @@ if __name__ == '__main__':
 	#     Convert data frame into numpy array for sklearn        #
 	# X - extract column 1 to 784 as training features(pixels)   #
 	# y - class of the examples									 #
+	# test_data_frame - data frame for test data                 #
+	# X_test - numpy array of test data                          #
 	##############################################################
 
-	X, y = divide_train_data(data_frame)
+	X_train, y_train = divide_train_data(data_frame)
+	test_data_frame = read_csv(test_file_name)
+	X_test = test_data_numpy_array(test_data_frame)
+	print "X_test ", len(X_test[0])
 
 	##############################################################
 	# Fit the np array into a classifier 						 #
 	# Test the classifier 										 #
 	##############################################################
 
+	classifier = RandomForestClassifier()
+	classifier.fit(X_train, y_train)
+	prediction = classifier.predict(X_test)
+
+	##############################################################
+	#Create file of test data class to upload                    #
+	##############################################################
+
+	c = 0
+	writer = csv.writer(open("results.csv", "w"))
+
+	if c == 0:
+		writer.writerow(["ImageId", "Label"])
+
+	for digit_class in prediction:
+		c += 1
+		writer.writerow([c, digit_class])
+		
+
+	print "##########prediction over###############"
+	print "#Result stored in results.csv          #"
+	print "########################################"
