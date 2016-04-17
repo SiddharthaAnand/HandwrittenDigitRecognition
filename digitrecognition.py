@@ -3,9 +3,10 @@ import csv
 import sys
 import pandas as pd
 import numpy as np
-from sklearn import svm
+from sklearn import neighbors
 from scipy import sparse
 from sklearn.ensemble import RandomForestClassifier
+
 
 def read_csv(file_name):
 	'''
@@ -87,18 +88,33 @@ if __name__ == '__main__':
 	X_test = test_data_numpy_array(test_data_frame)
 	print "X_test ", len(X_test[0])
 
+	'''
 	##############################################################
-	# Fit the np array into a classifier 						 #
+	# Fit the np array into a Random Forest classifier			 #
 	# Test the classifier 										 #
 	##############################################################
 
 	classifier = RandomForestClassifier()
 	classifier.fit(X_train, y_train)
 	prediction = classifier.predict(X_test)
+	'''
 
 	##############################################################
-	#Create file of test data class to upload                    #
+	# Fit the np array into a Nearest neighbor classifier			 #
+	# Test the classifier 										 #
 	##############################################################
+
+	classifier = neighbors.KNeighborsClassifier(n_neighbors=10, weights='distance', n_jobs=4)
+	classifier.fit(X_train, y_train)
+	prediction = classifier.predict(X_test)
+
+	##############################################################
+	#Create csv file of test data class to upload                #
+	#results.csv file format									 #
+	# ImageId Label  											 #
+	# 1       0 												 #
+	# ...     ... 												 #
+ 	##############################################################
 
 	c = 0
 	writer = csv.writer(open("results.csv", "w"))
@@ -110,7 +126,3 @@ if __name__ == '__main__':
 		c += 1
 		writer.writerow([c, digit_class])
 		
-
-	print "##########prediction over###############"
-	print "#Result stored in results.csv          #"
-	print "########################################"
